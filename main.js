@@ -3,18 +3,32 @@
   //   - 本サイト : https://opentdb.com/
   //   - 利用するAPI : https://opentdb.com/api.php?amount=10&type=multiple
 
-  const API_URL = 'https://opentdb.com/api.php?amount=10&type=multiple';
+  const API_URL = "https://opentdb.com/api.php?amount=10&type=multiple";
 
   // API_URLを使って実装してもらいたいこと
   //   1. Fetch API(fetchメソッド)を使ってAPI経由でデータを取得する
   //     - https://developer.mozilla.org/ja/docs/Web/API/WindowOrWorkerGlobalScope/fetch
-  //   2. fetchメソッドで取得したResponseデータからJSON形式のデータをオブジェクトに変換して次のthenメソッドにデータを渡す
-  //     - https://developer.mozilla.org/ja/docs/Web/API/Response
-  //   3. 2から受け取ったデータの中に含まれている次のデータをid属性値が `quiz-list` のul要素にリスト表示する
-  //     - resultsプロパティ(配列)の中に含まれている10件のデータ(オブジェクト)をforEachで取得する
-  //       - 「◯件目のクイズデータ」をli要素として追加する
-  //       - buildQuizList関数の戻り値(ul要素のDOM)をli要素に追加する。(結果としてネスト(入れ子)構造のリストになる)
 
+  fetch(API_URL)
+    //   2. fetchメソッドで取得したResponseデータからJSON形式のデータをオブジェクトに変換して次のthenメソッドにデータを渡す
+    //     - https://developer.mozilla.org/ja/docs/Web/API/Response
+    .then(res => {
+      return res.json();
+    })
+    //   3. 2から受け取ったデータの中に含まれている次のデータをid属性値が `quiz-list` のul要素にリスト表示する
+    //     - resultsプロパティ(配列)の中に含まれている10件のデータ(オブジェクト)をforEachで取得する
+    //       - 「◯件目のクイズデータ」をli要素として追加する
+    //       - buildQuizList関数の戻り値(ul要素のDOM)をli要素に追加する。(結果としてネスト(入れ子)構造のリストになる)
+    .then(json => {
+      const ulElement = document.getElementById("quiz-list");
+      json.results.forEach((element, index) => {
+        const liElement = document.createElement("li");
+        liElement.textContent = index + "件目のクイズデータ:";
+        index += 1;
+        ulElement.appendChild(liElement);
+        liElement.appendChild(buildQuizList(element));
+      });
+    });
 
   // `buildQuizList関数` を実装する
   //   - 実装する内容
@@ -29,5 +43,13 @@
   //    - quiz : オブジェクト(クイズデータ)
   //  - 戻り値
   //    - ul要素のDOM
-
+  const buildQuizList = quiz => {
+    const quizContainer = document.createElement("ul");
+    for (let prop in quiz) {
+      const item = document.createElement("li");
+      item.innerHTML = `<strong>${prop}</strong>: ${quiz[prop]}`;
+      quizContainer.appendChild(item);
+    }
+    return quizContainer;
+  };
 })();
